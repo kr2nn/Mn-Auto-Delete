@@ -5,8 +5,10 @@ from config import CHATS
 
 @Client.on_message(filters.group)
 async def auto_delete_handler(client, message):
-    if message.chat.id not in CHATS.IDS:
+    # If CHATS.IDS is not empty and this group ID is not in the list, skip
+    if CHATS.IDS and message.chat.id not in CHATS.IDS:
         return
+    
     delay = CHATS.DELETE_DELAY
     await asyncio.sleep(delay)
     try:

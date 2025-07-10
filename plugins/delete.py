@@ -4,7 +4,10 @@ import asyncio
 from pyrogram.errors import FloodWait
 from config import CHATS
 
-@Client.on_message(filters.group)
+# Define media filters you want to delete
+media_filters = filters.video | filters.document | filters.photo | filters.voice
+
+@Client.on_message(filters.group & (filters.text | media_filters))
 async def auto_delete_handler(client, message):
     # If CHATS.IDS is not empty and this chat ID is not in the list, skip
     if CHATS.IDS and message.chat.id not in CHATS.IDS:

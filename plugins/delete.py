@@ -4,17 +4,19 @@ import asyncio
 from pyrogram.errors import FloodWait
 from config import CHATS
 
-# Catch all group messages
+# Catch all group messages (including bot messages)
 all_filters = filters.group
 
 @Client.on_message(all_filters)
 async def auto_delete_handler(client, message):
+    # Check if chat is allowed
     if CHATS.IDS and message.chat.id not in CHATS.IDS:
         return
 
     delay = CHATS.DELETE_DELAY  # in seconds
 
-    print(f"Scheduling delete: chat {message.chat.id}, message {message.id}, user {message.from_user.id if message.from_user else 'N/A'}")
+    # Log message info
+    print(f"Scheduling delete: chat {message.chat.id}, message {message.id}, user {message.from_user.id if message.from_user else 'BOT'}")
 
     await asyncio.sleep(delay)
 

@@ -4,9 +4,8 @@ import asyncio
 from pyrogram.errors import FloodWait
 from config import CHATS
 
-# Define filters for media and bot's own messages
-media_filters = filters.video | filters.document | filters.photo | filters.voice | filters.audio
-all_filters = filters.group & (filters.text | media_filters | filters.me)
+# Catch everything: messages, media, bot messages, service messages
+all_filters = filters.group
 
 @Client.on_message(all_filters)
 async def auto_delete_handler(client, message):
@@ -14,9 +13,9 @@ async def auto_delete_handler(client, message):
     if CHATS.IDS and message.chat.id not in CHATS.IDS:
         return
 
-    delay = CHATS.DELETE_DELAY
+    delay = CHATS.DELETE_DELAY  # Delay in seconds
 
-    print(f"Scheduling message from chat {message.chat.id} (user {message.from_user.id}) for deletion in {delay} seconds.")
+    print(f"Scheduling delete: chat {message.chat.id}, message {message.message_id}, user {message.from_user.id if message.from_user else 'N/A'}")
 
     await asyncio.sleep(delay)
 
@@ -24,11 +23,11 @@ async def auto_delete_handler(client, message):
         await message.delete()
         print(f"Deleted message {message.message_id} from chat {message.chat.id}")
     except FloodWait as fw:
-        print(f"FloodWait triggered: sleeping for {fw.value} seconds")
+        print(f"FloodWait: waiting {fw.value} seconds")
         await asyncio.sleep(fw.value)
         try:
             await message.delete()
         except Exception as e:
-            print(f"Second delete attempt failed: {e}")
+            print(f"Retry failed: {e}")
     except Exception as e:
-        print(f"Error deleting message: {e}")
+        print(f"Delete error: {e}")

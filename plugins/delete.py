@@ -4,10 +4,11 @@ import asyncio
 from pyrogram.errors import FloodWait
 from config import CHATS
 
-# Define filters for media you want to auto-delete
-media_filters = filters.video | filters.document | filters.photo | filters.voice
+# Define filters for media and bot's own messages
+media_filters = filters.video | filters.document | filters.photo | filters.voice | filters.audio
+all_filters = filters.group & (filters.text | media_filters | filters.me)
 
-@Client.on_message(filters.group & (filters.text | media_filters))
+@Client.on_message(all_filters)
 async def auto_delete_handler(client, message):
     # Skip if chat is not in the allowed list
     if CHATS.IDS and message.chat.id not in CHATS.IDS:
@@ -15,8 +16,7 @@ async def auto_delete_handler(client, message):
 
     delay = CHATS.DELETE_DELAY
 
-    # Optional: Log message being scheduled for deletion
-    print(f"Scheduling message from chat {message.chat.id} for deletion in {delay} seconds.")
+    print(f"Scheduling message from chat {message.chat.id} (user {message.from_user.id}) for deletion in {delay} seconds.")
 
     await asyncio.sleep(delay)
 

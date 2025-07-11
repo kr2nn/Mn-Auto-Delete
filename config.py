@@ -17,5 +17,5 @@ class WEB:
     PORT = int(os.environ.get("PORT", 8000))
 
 class CHATS:
-    IDS = list(map(int, os.environ.get("CHATS", "-1002782555863").split())) if os.environ.get("CHATS") else []
+    IDS = list(map(int, os.environ.get("CHATS", "-1002799981051").split())) if os.environ.get("CHATS") else []
     DELETE_DELAY = int(os.environ.get("DELETE_DELAY", "30")) 
